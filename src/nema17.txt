@@ -1,0 +1,41 @@
+#include <Arduino.h>
+
+const int DIR = 12;            // Pin G12 ESP32
+const int STEP = 14;           // Pin G14 ESP32
+const int steps_per_rev = 200; // nbre pas par tour
+
+void setup()
+{
+  // put your setup code here, to run once:
+  Serial.begin(115200);
+  pinMode(STEP, OUTPUT);
+  pinMode(DIR, OUTPUT);
+}
+
+void loop()
+{
+  // put your main code here, to run repeatedly:
+  digitalWrite(DIR, HIGH);
+  Serial.println("Tourne dans le sens horaire");
+
+  for (int i = 0; i < steps_per_rev; i++)
+  {
+    digitalWrite(STEP, HIGH);
+    delayMicroseconds(3000);
+    digitalWrite(STEP, LOW);
+    delayMicroseconds(3000);
+  }
+  delay(1000);
+
+  /*digitalWrite(DIR, LOW);
+  Serial.println("Tour dans le sens trigo");
+
+  for (int i = 0; i < steps_per_rev; i++)
+  {
+    digitalWrite(STEP, HIGH);
+    delayMicroseconds(1000);
+    digitalWrite(STEP, LOW);
+    delayMicroseconds(1000);
+  }
+  delay(1000);*/
+}

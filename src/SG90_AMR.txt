@@ -1,0 +1,65 @@
+#include <Arduino.h>
+#include <ESP32Servo.h>
+
+#define PIN_SERVO1 4
+// #define PIN_SERVO2 0
+// #define PIN_SERVO3 16
+Servo SG90Servo;
+// Servo FT6335Servo;
+// Servo DM996Servo;
+
+void setup()
+{
+
+    SG90Servo.attach(PIN_SERVO1);
+    // FT6335Servo.attach(PIN_SERVO2);
+    // DM996Servo.attach(PIN_SERVO3);
+}
+
+void loop()
+{
+    /*SG90Servo.write(0);
+    delay(10);
+    SG90Servo.write(180);
+    delay(10);
+    sleep(2);
+    sleep(5);
+  FT6335Servo.write(0);
+  delay(10);
+  sleep(5);
+  DM996Servo.write(0);
+  delay(10);
+  sleep(5);
+  SG90Servo.write(60);
+  delay(10);
+  sleep(5);
+  FT6335Servo.write(120);
+  delay(10);
+  sleep(5);
+  DM996Servo.write(60);
+  delay(10);
+  sleep(5);
+
+  SG90Servo.write(180);
+  delay(10);
+  FT6335Servo.write(360);
+  delay(10);
+  sleep(5);
+  DM996Servo.write(120);
+  delay(10);
+  sleep(5);*/
+
+    for (int i = 0; i <= 150; i++)
+    {
+        SG90Servo.write(i);
+        delay(10);
+    }
+
+    for (int i = 150; i >= 0; i--)
+    {
+        SG90Servo.write(i);
+        delay(10);
+    }
+
+    sleep(0);
+}
