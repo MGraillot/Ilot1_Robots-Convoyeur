@@ -6,8 +6,8 @@
 #define PIN_SERVO1 4
 #define PIN_IR 17
 
-#define START_AMR 0x000000 // Button ON-OFF
-#define STOP_AMR 0x000000  // Button MENU
+#define START_AMR 0xFFA25D // Button ON-OFF
+#define STOP_AMR 0xFFE21D  // Button MENU
 // #define PIN_SERVO2 0
 // #define PIN_SERVO3 16
 Servo SG90Servo;
