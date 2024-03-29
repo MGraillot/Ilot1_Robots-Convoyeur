@@ -7,7 +7,7 @@ const int steps_per_rev = 200; // nbre pas par tour
 void setup()
 {
   // put your setup code here, to run once:
-  Serial.begin(115200);
+  Serial.begin(9600); // start the serial port
   pinMode(STEP, OUTPUT);
   pinMode(DIR, OUTPUT);
 }
@@ -38,4 +38,8 @@ void loop()
     delayMicroseconds(1000);
   }
   delay(1000);*/
+}
+
+  
+
 }
