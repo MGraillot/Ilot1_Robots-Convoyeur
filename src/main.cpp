@@ -3,7 +3,6 @@
 #include <ESP32Servo.h>
 #include <IRremoteESP8266.h>
 #include <IRrecv.h>
-#include <SharpIR.h>
 
 /* // TEST ROBOT SERVO MOTEURS
 
@@ -28,75 +27,102 @@ void setup()
   // Position pose robot
   FT6335Servo.write(0);
   DM996Servo1.write(0);
-  DM996Servo2.write(0);
-  DM996Servo3.write(0);
+  DM996Servo2.write(30);
+  DM996Servo3.write(30);
+}
+
+void pose_init() // A COMMENTER SI DANS LE SETUP POUR TEST
+{
+  FT6335Servo.write(0);
+  delay(10);
+
+  DM996Servo1.write(0);
+  delay(10);
+
+  DM996Servo2.write(30);
+  delay(10);
+
+  DM996Servo3.write(30);
+  delay(10);
+  delay(1000);
 }
 
 void loop()
 {
-  // ESSAIS SERV0 S90 - FT6335 - DM996
-
-  SG90Servo.write(0);
-  delay(10);
-  SG90Servo.write(180);
-  delay(10);
-  sleep(2);
-  sleep(5);
+  // INIT POSITION -- A COMMENTER SI DANS LE SETUP
   FT6335Servo.write(0);
   delay(10);
-  sleep(5);
-  DM996Servo.write(0);
-   delay(10);
-  sleep(5);
-  SG90Servo.write(60);
+  DM996Servo1.write(0);
   delay(10);
-  sleep(5);
-  FT6335Servo.write(120);
+  DM996Servo2.write(5);
   delay(10);
-  sleep(5);
-  DM996Servo.write(60);
+  DM996Servo3.write(0);
   delay(10);
-  sleep(5);
+  sleep(3);
 
-  SG90Servo.write(180);
-  delay(10);
-  FT6335Servo.write(360);
-  delay(10);
-  sleep(5);
+  // MOVE ROBOT PRISE PIECE
+  DM996Servo1.write(20);
+  delay(50);
+  delay(1000);
+  DM996Servo3.write(0);
+  delay(50);
+  delay(1000);
+  DM996Servo2.write(20);
+  delay(50);
+  delay(1000);
+  DM996Servo2.write(30);
+  delay(50);
+  delay(1000);
+  FT6335Servo.write(48);
+  delay(50);
+  delay(1000);
+  DM996Servo2.write(20);
+  delay(50);
+  sleep(3);
+  DM996Servo2.write(30);
+  delay(50);
+  sleep(3);
+
   FT6335Servo.write(0);
-  delay(10);
-  sleep(5);
-  DM996Servo.write(120);
-  delay(10);
-  sleep(5);
+  delay(50);
+  sleep(1);
 
- for (int i = 0; i <= 150; i++)
+  // moveSmooth(FT6335Servo, 48);
+  FT6335Servo.write(48);
+  delay(10);
+  sleep(3);
+
+  FT6335Servo.write(48); // 90° robot
+  delay(10);
+  sleep(3);
+
+  // moveSmooth(DM996Servo2, 25);
+  DM996Servo1.write(25);
+  delay(10);
+  sleep(3);
+  // moveSmooth(DM996Servo2, 50);
+  DM996Servo1.write(50);
+  delay(10);
+  sleep(3);
+
+  // TEST BOUCLE FOR
+  for (int i = 0; i <= 150; i++)
   {
-    SG90Servo.write(i);
+    DM996Servo1.write(i);
     delay(10);
   }
 
   for (int i = 150; i >= 0; i--)
   {
-    SG90Servo.write(i);
+    DM996Servo1.write(i);
     delay(10);
   }
 
   sleep(0);
-
-// TEST ROBOT V2 - FT6335 + DM996R
-DM996Servo1.write(30);
-delay(10);
-sleep(3);
-DM996Servo3.write(90);
-delay(10);
-sleep(3);
-DM996Servo2.write(120);
-delay(10);
-sleep(3);
 }*/
 
-/* // TEST NEMMA WITH SENSOR SHARP IR
+/* // TEST ACTION WITH SENSOR SHARP IR
+#include <SharpIR.h>
 
     const int DIR = 12;            // Pin G12 ESP32
     const int STEP = 14;           // Pin G14 ESP32
@@ -134,112 +160,77 @@ sleep(3);
 
 /* // TEST CAPTEUR IR CLASSIQUE
 
-    #define irSensor 35
-    #define LED 33
+#define irSensor 35
+#define LED 33
 
-    int irReading;
+int irReading;
 
-    void setup()
-    {
-      Serial.begin(9600);
-      pinMode(irSensor, INPUT);
-      pinMode(LED, OUTPUT);
-    }
-
-    void loop()
-    {
-
-      irReading = digitalRead(irSensor); // lecture de la valeur du signal
-      Serial.print("State Sensor - ");
-      Serial.println(irReading);
-
-      if (irReading == LOW)
-      {
-        digitalWrite(LED, HIGH);
-      }
-      else
-      {
-        digitalWrite(LED, LOW);
-      }
-    }
-    */
-
-/* // TEST POMPE A VIDE
-
-    #define PIN_ENABLE_POMPE 32
-    #define PIN_PHASE_POMPE 33
-    #define Valve 21 //(17)
-
-    void setup()
-    {
-      pinMode(PIN_ENABLE_POMPE, OUTPUT);
-      pinMode(PIN_PHASE_POMPE, OUTPUT);
-      pinMode(Valve, OUTPUT);
-
-      digitalWrite(PIN_PHASE_POMPE, HIGH);
-      digitalWrite(Valve, HIGH);
-    }
-
-    void loop()
-    {
-      digitalWrite(PIN_ENABLE_POMPE, HIGH);
-      delay(1000);
-
-      digitalWrite(PIN_ENABLE_POMPE, LOW);
-      delay(2500);
-      digitalWrite(Valve, LOW);
-
-    }
-    */
-
-/* // TEST NEMMA WITH SENSOR IR
-
-const int DIR = 12;            // Pin G12 ESP32
-const int STEP = 14;           // Pin G14 ESP32
-const int steps_per_rev = 200; // nbre pas par tour
 void setup()
 {
-  Serial.begin(9600); // start the serial port
-  pinMode(STEP, OUTPUT);
+  Serial.begin(9600);
+  pinMode(irSensor, INPUT);
+  pinMode(LED, OUTPUT);
 }
 
 void loop()
 {
 
-  // put your main code here, to run repeatedly:
-  digitalWrite(DIR, HIGH);
-  Serial.println("Tourne dans le sens horaire");
+  irReading = digitalRead(irSensor); // lecture de la valeur du signal
+  Serial.print("State Sensor - ");
+  Serial.println(irReading);
 
-  for (int i = 0; i < steps_per_rev; i++)
+  if (irReading == LOW)
   {
-    digitalWrite(STEP, HIGH);
-    delayMicroseconds(3000);
-    digitalWrite(STEP, LOW);
-    delayMicroseconds(3000);
+    digitalWrite(LED, HIGH);
   }
-  delay(1000);
-
-  digitalWrite(DIR, LOW);
-  Serial.println("Tour dans le sens trigo");
-
-  for (int i = 0; i < steps_per_rev; i++)
+  else
   {
-    digitalWrite(STEP, HIGH);
-    delayMicroseconds(1000);
-    digitalWrite(STEP, LOW);
-    delayMicroseconds(1000);
+    digitalWrite(LED, LOW);
   }
-  delay(1000);
 }*/
 
-/* // TEST LAMBDA
+// TEST NEMA 17 DU 19.04
+#include <Arduino.h>
+#include <AccelStepper.h>
 
-#define PIN_IR 17
-IRrecv irrecv(PIN_IR);
-decode_results results;
+// Pin connecte au A4988 driver pas à pas
+#define DIR_PIN 12
+#define STEP_PIN 14
+
+// Pin connecte au sensor IR
+#define IR_SENSOR_PIN 35
+
+// Instance AccelStepper (AccelStepper.h)
+AccelStepper stepper(AccelStepper::DRIVER, STEP_PIN, DIR_PIN);
 
 void setup()
 {
-  irrecv.enableIRIn();
-  Serial.begin(9600);
-}*/
+  // Configureation broches motor + sensor IR
+  pinMode(DIR_PIN, OUTPUT);
+  pinMode(STEP_PIN, OUTPUT);
+  pinMode(IR_SENSOR_PIN, INPUT);
+
+  // Maximum speed & acceleration
+  stepper.setMaxSpeed(1000);
+  stepper.setAcceleration(500);
+}
+
+void loop()
+{
+  // Lire l'état du sensor IR
+  int irState = digitalRead(IR_SENSOR_PIN);
+  // Si capteur détecte quelque chose alors on arrête le moteur
+  if (irState == HIGH)
+  {
+    stepper.stop();
+  }
+  else
+  // Sinon on continue à faire tourner le moteur dans un sens donné
+  {
+    stepper.setSpeed(1000); // Vitesse sens horaire (positive)
+    stepper.runSpeed();     // Faire tourner le moteur
+  }
+
+  // Attendre un certain temps avant la relecture du capteur IR
+  delay(1000);
+}
