@@ -3,7 +3,7 @@
 #include <ESP32Servo.h>
 #include <IRremoteESP8266.h>
 #include <IRrecv.h>
-//TEST
+//TEST -- TEST OK LUCA
 /* // TEST ROBOT SERVO MOTEURS
 
 #define PIN_SERVO1 19 // SERVO BASE (0)
