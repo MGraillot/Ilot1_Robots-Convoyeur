@@ -3,6 +3,7 @@
 #include <ESP32Servo.h>
 #include <IRremoteESP8266.h>
 #include <IRrecv.h>
+#include <AccelStepper.h>
 
 /* // TEST ROBOT SERVO MOTEURS
 
@@ -121,7 +122,7 @@ void loop()
   sleep(0);
 }*/
 
-/* // TEST ACTION WITH SENSOR SHARP IR
+/*// TEST ACTION WITH SENSOR SHARP IR
 #include <SharpIR.h>
 
     const int DIR = 12;            // Pin G12 ESP32
@@ -156,42 +157,60 @@ void loop()
         delay(2000);
       }
     }
-    */
+*/
 
-/* // TEST CAPTEUR IR CLASSIQUE
+// TEST CAPTEUR IR CLASSIQUE
 
+// Pins connectées au A4988 driver pas à pas
+#define DIR_PIN 12
+#define STEP_PIN 14
+//Pin connectée au capteur IR
 #define irSensor 35
-#define LED 33
 
+//Variable recevant l'information du capteur IR (0 ou 1)
 int irReading;
+//Variable qui prend la valeur qu'on a envoyer dans le moniteur série
+String commande;
+
+// Instance AccelStepper (AccelStepper.h)
+AccelStepper stepper(AccelStepper::DRIVER, STEP_PIN, DIR_PIN);
 
 void setup()
 {
   Serial.begin(9600);
+
+  // Configureation broches motor + sensor IR
   pinMode(irSensor, INPUT);
-  pinMode(LED, OUTPUT);
+  pinMode(DIR_PIN, OUTPUT);
+  pinMode(STEP_PIN, OUTPUT);
 }
 
 void loop()
 {
-
-  irReading = digitalRead(irSensor); // lecture de la valeur du signal
-  Serial.print("State Sensor - ");
-  Serial.println(irReading);
-
-  if (irReading == LOW)
+  if (Serial.available() > 0 )   
   {
-    digitalWrite(LED, HIGH);
+      commande = Serial.readString();
   }
-  else
+  else 
   {
-    digitalWrite(LED, LOW);
-  }
-}*/
+    if (commande == "a")
+    {
+      irReading = digitalRead(irSensor); // lecture de la valeur du signal
+      while (irReading == LOW)
+      {
+        stepper.setSpeed(1000); // Vitesse sens horaire (positive)
+        stepper.runSpeed();     // Faire tourner le moteur
+      }
+      stepper.stop();
+    }
+    else if (commande == "b")
+    {
+      stepper.stop();
+    }
+  } 
+}
 
-// TEST NEMA 17 DU 19.04
-#include <Arduino.h>
-#include <AccelStepper.h>
+/*// TEST NEMA 17 DU 19.04
 
 // Pin connecte au A4988 driver pas à pas
 #define DIR_PIN 12
@@ -233,4 +252,4 @@ void loop()
 
   // Attendre un certain temps avant la relecture du capteur IR
   delay(1000);
-}
+}*/
