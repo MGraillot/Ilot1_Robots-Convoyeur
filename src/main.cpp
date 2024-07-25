@@ -161,15 +161,15 @@ void loop()
 
 // TEST CAPTEUR IR CLASSIQUE
 
-// Pins connectées au A4988 driver pas à pas
+/*// Pins connectées au A4988 driver pas à pas
 #define DIR_PIN 12
 #define STEP_PIN 14
-//Pin connectée au capteur IR
+// Pin connectée au capteur IR
 #define irSensor 35
 
-//Variable recevant l'information du capteur IR (0 ou 1)
+// Variable recevant l'information du capteur IR (0 ou 1)
 int irReading;
-//Variable qui prend la valeur qu'on a envoyer dans le moniteur série
+// Variable qui prend la valeur qu'on a envoyer dans le moniteur série
 String commande;
 
 // Instance AccelStepper (AccelStepper.h)
@@ -187,11 +187,14 @@ void setup()
 
 void loop()
 {
-  if (Serial.available() > 0 )   
+  irReading = digitalRead(irSensor);
+  Serial.println(irReading);
+  delay(500);
+  if (Serial.available() > 0 )
   {
       commande = Serial.readString();
   }
-  else 
+  else
   {
     if (commande == "a")
     {
@@ -207,10 +210,11 @@ void loop()
     {
       stepper.stop();
     }
-  } 
+  }
 }
+*/
 
-/*// TEST NEMA 17 DU 19.04
+// TEST NEMA 17 DU 26/0724
 
 // Pin connecte au A4988 driver pas à pas
 #define DIR_PIN 12
@@ -220,36 +224,118 @@ void loop()
 #define IR_SENSOR_PIN 35
 
 // Instance AccelStepper (AccelStepper.h)
-AccelStepper stepper(AccelStepper::DRIVER, STEP_PIN, DIR_PIN);
+AccelStepper stepper(AccelStepper::DRIVER, STEP_PIN, DIR_PIN); // On utilise un DRIVER qui contient 2 pins (DRIVER=1)
 
 void setup()
 {
-  // Configureation broches motor + sensor IR
+  Serial.begin(115200);
+  // Configuration broches motor + sensor IR
   pinMode(DIR_PIN, OUTPUT);
   pinMode(STEP_PIN, OUTPUT);
   pinMode(IR_SENSOR_PIN, INPUT);
 
   // Maximum speed & acceleration
-  stepper.setMaxSpeed(1000);
-  stepper.setAcceleration(500);
+  stepper.setMaxSpeed(1000); // vitesse maxi du moteur en pas par seconde
+  // stepper.setAcceleration(50);     // accel du moteur en pas par seconde au carré. Permet au moteur de démarrer et de s'arrêter en douceur
+  stepper.setSpeed(200); // vitesse initiale du moteur en pas par seconde. (+ sens horaire / - sens trigo)
 }
+
+/*
+void stop()
+{
+  stepper.setSpeed(0);
+  delay(2000);
+}
+
+void restart()
+{
+  stepper.setSpeed(200);
+  delay(5000);
+}*/
 
 void loop()
 {
-  // Lire l'état du sensor IR
-  int irState = digitalRead(IR_SENSOR_PIN);
-  // Si capteur détecte quelque chose alors on arrête le moteur
-  if (irState == HIGH)
-  {
-    stepper.stop();
-  }
-  else
-  // Sinon on continue à faire tourner le moteur dans un sens donné
-  {
-    stepper.setSpeed(1000); // Vitesse sens horaire (positive)
-    stepper.runSpeed();     // Faire tourner le moteur
-  }
+  // -- Variables statiques --
+  // Enregistrer le dernier moment où l'état du moteur a changé (démarrage/arrêt). Utiliser pour mesurer le temps écoulé
+  static unsigned long lastChangeTime = 0;
+  // Moteur en marche ? Utiliser pour alterner entre les états marche et arrêt
+  static bool motorRunning = true;
 
-  // Attendre un certain temps avant la relecture du capteur IR
-  delay(1000);
+  // Faire avancer le moteur en continu si la vitesse n'est pas zéro
+  // Doit être appelée aussi souvent que possible pour assurer un mouvement fluide du moteur
+  stepper.runSpeed();
+
+  // Intervalle de temps pour changer l'état du moteur (en millisecondes)
+  // Si moteur en marche, intervalle = 5 secondes (5000 ms)
+  // Si moteur à l'arrêt, intervalle = 2 secondes (2000 ms)
+  unsigned long interval = motorRunning ? 5000 : 2000; // 5 secondes en marche, 2 secondes à l'arrêt
+
+  // Fonction pour changer l'état du moteur à faire ! OK FINI ET FONCTIONNE
+  /*
+  """
+  Le moteur tourne en continu à la vitesse définie par myStepper.setSpeed(200);.
+  Après 5 secondes(interval = 5000),le moteur s'arrête en définissant setSpeed(0);
+  Après 2 secondes(interval = 2000), le moteur redémarre en définissant à nouveau setSpeed(200);
+  """
+  */
+
+  // On vérifie si l'intervalle de temps défini s'est écoulé en comparant le temps actuel (en millisecondes) avec lastChangeTime
+  if (millis() - lastChangeTime >= interval)
+  {
+    // Variables statiques
+    // Enregistrer le dernier moment où l'état du moteur a changé
+    // Utilisation de millis() = mesurer le temps écoulé et alterner entre démarrage et arrêt du moteur
+
+    // On met à jour lastChangeTime avec le temps actuel
+    lastChangeTime = millis();
+
+    // Indiquer si le moteur en marche
+    // Si OUI
+    if (motorRunning)
+    {
+      // Arrêter le moteur avec la vitesse définie à 0 avec setSpeed();
+      stepper.setSpeed(0);
+    }
+    else
+    {
+      // Redémarrer le moteur dans le même sens avec la vitesse définie avec setSpeed();
+      stepper.setSpeed(200);
+    }
+
+    // On inverse l'état de motorRunning (marche <-> arrêt)
+    motorRunning = !motorRunning;
+  }
+}
+
+/*
+stepper.runSpeed(); // Faire tourner le moteur
+Serial.println("MOTOR RUN");
+stop();
+Serial.println("STOP");
+restart();
+Serial.println("RESTART");
+// Serial.print("RUN");
+// delay(5000);
+// stop();
+// Serial.print("STOP");
+// delay(5000);*/
+
+/*
+// Lire l'état du sensor IR
+int irState = digitalRead(IR_SENSOR_PIN);
+Serial.println(irState);
+// Si capteur détecte quelque chose alors on arrête le moteur
+if (irState == HIGH)
+{
+  stepper.stop();
+}
+else
+// Sinon on continue à faire tourner le moteur dans un sens donné
+{
+  stepper.setSpeed(200); // Vitesse sens horaire (positive)
+  stepper.runSpeed();    // Faire tourner le moteur
+}
+
+// Attendre un certain temps avant la relecture du capteur IR
+delay(1000);
 }*/
