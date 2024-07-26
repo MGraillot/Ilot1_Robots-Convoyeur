@@ -181,8 +181,6 @@ void setup()
 
   // Configureation broches motor + sensor IR
   pinMode(irSensor, INPUT);
-  pinMode(DIR_PIN, OUTPUT);
-  pinMode(STEP_PIN, OUTPUT);
 }
 
 void loop()
@@ -196,10 +194,11 @@ void loop()
     if (commande == "a")
     {
       irReading = digitalRead(irSensor); // lecture de la valeur du signal
-      while (irReading == LOW)
+      while (irReading == HIGH)
       {
-        stepper.setSpeed(1000); // Vitesse sens horaire (positive)
-        stepper.runSpeed();     // Faire tourner le moteur
+        stepper.setMaxSpeed(1000); // Vitesse sens horaire (positive)
+        stepper.setAcceleration(500); // Vitesse sens horaire (positive)
+        stepper.setSpeed(200); // Vitesse sens horaire (positive)
       }
       stepper.stop();
     }
