@@ -237,7 +237,7 @@ void setup()
   // Maximum speed & acceleration
   stepper.setMaxSpeed(1000); // vitesse maxi du moteur en pas par seconde
   // stepper.setAcceleration(50);     // accel du moteur en pas par seconde au carré. Permet au moteur de démarrer et de s'arrêter en douceur
-  stepper.setSpeed(200); // vitesse initiale du moteur en pas par seconde. (+ sens horaire / - sens trigo)
+  stepper.setSpeed(-400); // vitesse initiale du moteur en pas par seconde. (+ sens horaire / - sens trigo)
 }
 
 /*
@@ -253,8 +253,15 @@ void restart()
   delay(5000);
 }*/
 
-void loop()
+/*
+void loop() // MOTEUR OK ARRET AVEC UN TEMPS DONNE
 {
+  // TEST CAPTEUR INFRA
+  // int irReading = digitalRead(IR_SENSOR_PIN);
+  // Serial.print(irReading);
+  // delay(500);
+  // RESULTS : 1(HIGH) --> PAS D'OBSTACLE * 0(LOW) --> OBSTACLE
+
   // -- Variables statiques --
   // Enregistrer le dernier moment où l'état du moteur a changé (démarrage/arrêt). Utiliser pour mesurer le temps écoulé
   static unsigned long lastChangeTime = 0;
@@ -271,13 +278,10 @@ void loop()
   unsigned long interval = motorRunning ? 5000 : 2000; // 5 secondes en marche, 2 secondes à l'arrêt
 
   // Fonction pour changer l'état du moteur à faire ! OK FINI ET FONCTIONNE
-  /*
-  """
-  Le moteur tourne en continu à la vitesse définie par myStepper.setSpeed(200);.
-  Après 5 secondes(interval = 5000),le moteur s'arrête en définissant setSpeed(0);
-  Après 2 secondes(interval = 2000), le moteur redémarre en définissant à nouveau setSpeed(200);
-  """
-  */
+
+  // Le moteur tourne en continu à la vitesse définie par myStepper.setSpeed(200);
+  // Après 5 secondes(interval = 5000), le moteur s'arrête en définissant setSpeed(0); Après 2 secondes(interval = 2000),
+  // le moteur redémarre en définissant à nouveau setSpeed(200);
 
   // On vérifie si l'intervalle de temps défini s'est écoulé en comparant le temps actuel (en millisecondes) avec lastChangeTime
   if (millis() - lastChangeTime >= interval)
@@ -296,16 +300,82 @@ void loop()
       // Arrêter le moteur avec la vitesse définie à 0 avec setSpeed();
       stepper.setSpeed(0);
     }
-    else
-    {
-      // Redémarrer le moteur dans le même sens avec la vitesse définie avec setSpeed();
-      stepper.setSpeed(200);
-    }
+  }
+  else
+  {
+    // Redémarrer le moteur dans le même sens avec la vitesse définie avec setSpeed();
+    stepper.setSpeed(-200);
+  }
+  // On inverse l'état de motorRunning (marche <-> arrêt)
+  motorRunning = !motorRunning;
+}
+*/
 
-    // On inverse l'état de motorRunning (marche <-> arrêt)
-    motorRunning = !motorRunning;
+void loop()
+{
+  // TEST CAPTEUR INFRA
+  // int irReading = digitalRead(IR_SENSOR_PIN);
+  // Serial.print(irReading);
+  // delay(500);
+  // RESULTS : 1(HIGH) --> PAS D'OBSTACLE * 0(LOW) --> OBSTACLE
+
+  int irReading = digitalRead(IR_SENSOR_PIN); // Variable pour avoir les états du capteur
+  Serial.print(irReading);
+
+  // Statique pour mémoriser le dernier temps de changement d'état
+  static unsigned long stopStartTime = 0;
+  static bool motorStopped = false;
+
+  // Si le capteur détecte un obstacle (LOW), arrêter le moteur
+  if (irReading == LOW)
+  {
+    if (!motorStopped)
+    {
+      stepper.setSpeed(0);
+      // Enregistrer le temps actuel quand l'obstacle est détecté
+      stopStartTime = millis();
+      motorStopped = true;
+    }
+  }
+
+  // Si 10 secondes se sont écoulées depuis l'arrêt, redémarrer le moteur
+  if (motorStopped && (millis() - stopStartTime >= 10000))
+  {
+    stepper.setSpeed(-400); // Ajuste cette valeur selon tes besoins
+    motorStopped = false;
+  }
+
+  // Faire avancer le moteur si la vitesse n'est pas zéro
+  stepper.runSpeed();
+}
+
+/*
+// On vérifie si l'intervalle de temps défini s'est écoulé en comparant le temps actuel (en millisecondes) avec lastChangeTime
+if (millis() - lastChangeTime >= interval)
+{
+  // Variables statiques
+  // Enregistrer le dernier moment où l'état du moteur a changé
+  // Utilisation de millis() = mesurer le temps écoulé et alterner entre démarrage et arrêt du moteur
+
+  // On met à jour lastChangeTime avec le temps actuel
+  lastChangeTime = millis();
+
+  // Indiquer si le moteur en marche
+  // Si OUI
+  if (motorRunning)
+  {
+    // Arrêter le moteur avec la vitesse définie à 0 avec setSpeed();
+    stepper.setSpeed(0);
   }
 }
+else
+{
+  // Redémarrer le moteur dans le même sens avec la vitesse définie avec setSpeed();
+  stepper.setSpeed(-200);
+}
+// On inverse l'état de motorRunning (marche <-> arrêt)
+motorRunning = !motorRunning;
+}*/
 
 /*
 stepper.runSpeed(); // Faire tourner le moteur
