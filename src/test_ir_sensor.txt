@@ -1,0 +1,32 @@
+#include <Arduino.h>
+#include <IRrecv.h>
+
+// Définition des broches pour le capteur infrarouge
+#define IR_SENSOR_PIN 35
+
+const char *message_action;
+
+void setup()
+{
+    Serial.begin(115200);
+    pinMode(IR_SENSOR_PIN, INPUT);
+}
+
+void loop()
+{
+    int irReading = digitalRead(IR_SENSOR_PIN);
+    Serial.print(irReading);
+    delay(200);
+
+    // Si le capteur détecte un obstacle (LOW), action
+    if (irReading == LOW)
+    {
+        message_action = "objet detecte par le capteur IR du convoyeur";
+        Serial.println(message_action);
+    }
+    else
+    {
+        message_action = "pas d'objet detecte par le capteur IR du convoyeur";
+        Serial.println(message_action);
+    }
+}

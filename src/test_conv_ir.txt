@@ -1,0 +1,78 @@
+#include <Arduino.h>
+#include <AccelStepper.h>
+
+// Définition des broches pour le pilote du moteur pas à pas
+#define DIR_PIN 12
+#define STEP_PIN 14
+
+// Définition des broches pour le capteur infrarouge
+#define IR_SENSOR_PIN 35
+
+// Création d'une instance de AccelStepper pour contrôler le moteur pas à pas
+AccelStepper stepper(AccelStepper::DRIVER, STEP_PIN, DIR_PIN);
+
+int state = 0;              // Variable pour l'état du système
+const char *message_action; // Pointeur vers le message à afficher
+bool motorRunning = false;  // Drapeau d'indication d'état du moteur
+
+int irState; // Etat du capteur infrarouge
+
+void setup()
+{
+    Serial.begin(115200);
+    pinMode(IR_SENSOR_PIN, INPUT);
+
+    pinMode(DIR_PIN, OUTPUT);
+    pinMode(STEP_PIN, OUTPUT);
+
+    stepper.setMaxSpeed(1000); // Définition de la vitesse maxi du moteur
+    stepper.setSpeed(0);       // Initialisation vitesse moteur = 0 (arrêt)
+
+    while (!Serial)
+    {
+        ; // Attente de connexion série
+    }
+}
+
+void loop()
+{
+    //  Vérification de la dispo des données sur le port série
+    if (Serial.available() > 0)
+    {
+        char cmd_test = Serial.read();
+        // Entrée par l'utilisateur = simulation d'un mot envoyé par un robot
+        if (cmd_test == 't')
+        {
+            switch (state)
+            {
+            case 0:
+                message_action = "Le robot1 a apporté la pièce 1 sur le convoyeur, activation du convoyeur.";
+                Serial.println(message_action);
+                stepper.setSpeed(-200); // Démarrer le moteur (sens trigo)
+                motorRunning = true;
+                state = 1;
+                break;
+            case 1:
+                message_action = "Le robot2 a fini d'assembler les 2 pieces, attente de la confirmation du robot1.";
+                Serial.println(message_action);
+                state = 0;
+                break;
+            }
+        }
+    }
+
+    // Vérifier en continu si un objet est détecté
+    irState = digitalRead(IR_SENSOR_PIN);
+    if (irState == LOW && motorRunning) // Si l'objet est détecté et le moteur tourne
+    {
+        Serial.println("Objet détecté, arrêt du moteur !");
+        stepper.setSpeed(0);  // Arrêter le moteur
+        motorRunning = false; // Mettre à jour l'état du moteur
+        state = 1;            // Passer à l'état suivant si nécessaire
+    }
+
+    if (motorRunning)
+    {
+        stepper.runSpeed(); // Faire tourner le moteur d'un pas s'il est en marche
+    }
+}
