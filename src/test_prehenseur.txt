@@ -1,0 +1,35 @@
+#include <Arduino.h>
+
+// Définition des broches
+const int pinPHASE = 4;
+const int pinENABLE = 0;
+const int pinTransistor = 25;
+
+void setup() {
+  pinMode(pinPHASE, OUTPUT);
+  pinMode(pinENABLE, OUTPUT);
+  pinMode(pinTransistor, OUTPUT);
+
+  // Assurer que la pompe est désactivée au début
+  digitalWrite(pinPHASE, LOW);
+  digitalWrite(pinENABLE, LOW);
+  delay(1000);
+}
+
+void loop() {
+  // Activer la pompe
+  digitalWrite(pinTransistor, LOW);
+  digitalWrite(pinENABLE, HIGH);
+  digitalWrite(pinPHASE, HIGH);
+
+  // Maintenir la pompe activée pendant 5 secondes
+  delay(5000);
+
+  // Désactiver la pompe
+  digitalWrite(pinPHASE, LOW);
+  digitalWrite(pinENABLE, LOW);
+  
+  // Activer le transistor
+  digitalWrite(pinTransistor, HIGH);
+  delay(1000);
+}
