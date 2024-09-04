@@ -128,10 +128,10 @@ Servo DM996Servo1;
 Servo DM996Servo2;
 Servo DM996Servo3;
 
-int servoPin = 19;  // Servo Base
-int servo1Pin = 22; // Servo 1
-int servo2Pin = 21; // Servo 2
-int servo3Pin = 23; // Servo 3 (bout de bras)
+int servoPin = 23;  // Servo Base (19)
+int servo1Pin = 22; // Servo 1 (22)
+int servo2Pin = 21; // Servo 2 (21)
+int servo3Pin = 19; // Servo 3 (bout de bras) (23)
 
 void setup()
 {
@@ -186,6 +186,20 @@ void setup()
   FT6335Servo.write(endAngle); // Assurez-vous d'atteindre l'angle final
 }*/
 
+// Fonction générique pour déplacer lentement n'importe quel servo
+void moveSlowly(Servo &servo, int startAngle, int endAngle, int delay_ms)
+{
+  int step = (startAngle < endAngle) ? 1 : -1;
+
+  for (int angle = startAngle; angle != endAngle; angle += step)
+  {
+    servo.write(angle);
+    delay(delay_ms);
+  }
+  servo.write(endAngle); // Assurez-vous d'atteindre l'angle final
+}
+
+/*
 void moveSlowlyBase(int startAngle, int endAngle, int delay_ms)
 {
   int step = (startAngle < endAngle) ? 1 : -1;
@@ -232,7 +246,7 @@ void moveSlowly3(int startAngle, int endAngle, int delay_ms)
     delay(delay_ms);
   }
   DM996Servo3.write(endAngle); // Assurez-vous d'atteindre l'angle final
-}
+}*/
 
 void loop()
 {
@@ -242,72 +256,34 @@ void loop()
     char cmd_test = Serial.read();
     // Entrée par l'utilisateur = simulation d'un mot envoyé par un robot
     if (cmd_test == 'b')
+    // MBASE
     {
-      moveSlowlyBase(0, 49, 50); // Déplace de 0° à 90° avec un délai de 50ms entre chaque degré
-      Serial.println("je suis a la pose 97");
+      moveSlowly(FT6335Servo, 0, 1, 50); // Déplace de 0° à 90° avec un délai de 50ms entre chaque degré
+      Serial.println("MBASE a 90 deg");
     }
     if (cmd_test == '1')
+    // M1
     {
-      moveSlowly1(0, 30, 50); // Déplace de 0° à 30° avec un délai de 50ms entre chaque degré
-      Serial.println("je suis a la pose 97");
+      moveSlowly(DM996Servo1, 0, 50, 50); // Déplace de 0° à 30° avec un délai de 50ms entre chaque degré
+      Serial.println("M1 a 50 deg");
     }
     if (cmd_test == '2')
+    // M2
     {
-      moveSlowly2(40, 20, 50); // Déplace de 40° à 20° avec un délai de 50ms entre chaque degré
-      Serial.println("je suis a la pose 97");
+      moveSlowly(DM996Servo2, 40, 50, 50); // Déplace de 40° à 20° avec un délai de 50ms entre chaque degré
+      Serial.println("M2 a 50 deg");
     }
     if (cmd_test == '3')
+    // M3
     {
-      moveSlowly3(140, 70, 50); // Déplace de 140° à 70° avec un délai de 50ms entre chaque degré
-      Serial.println("je suis a la pose 97");
+      moveSlowly(DM996Servo3, 140, 87, 50); // Déplace de 140° à 70° avec un délai de 50ms entre chaque degré
+      Serial.println("M3 a 100 deg");
     }
 
     if (cmd_test == 'c')
     {
-      moveSlowlyBase(0, 49, 50); // Déplace de 0° à 90° avec un délai de 50ms entre chaque degré
+      moveSlowly(FT6335Servo, 0, 49, 50); // Déplace de 0° à 90° avec un délai de 50ms entre chaque degré
       Serial.println("je suis a la pose 97");
     }
-    if (cmd_test == '4')
-    {
-      moveSlowly1(30, 5, 50); // Déplace de 30° à 5° avec un délai de 50ms entre chaque degré
-      Serial.println("je suis a la pose 97");
-    }
-    if (cmd_test == '5')
-    {
-      moveSlowly2(20, 80, 50); // Déplace de 20° à 80° avec un délai de 50ms entre chaque degré
-      Serial.println("je suis a la pose 97");
-    }
-    if (cmd_test == '6')
-    {
-      moveSlowly3(70, 140, 50); // Déplace de 70° à 140° avec un délai de 50ms entre chaque degré
-      Serial.println("je suis a la pose 97");
-    }
-    if (cmd_test == '7')
-    {
-      moveSlowly1(30, 15, 50); // Déplace de 30° à 15° avec un délai de 50ms entre chaque degré
-      Serial.println("je suis a la pose 97");
-    }
-
-    // Serial.println("servo 3 a 20 deg");
-    // delay(1000);
-
-    /*moveSlowlyBase(98, 0, 50); // Retourne de 180° à 0°
-    Serial.println("je suis a la pose 0 (init)");
-    delay(1000);*/
-
-    /*moveSlowlyServo1(0, -30, 25); // Déplace de 0° à 180° avec un délai de 50ms entre chaque degré
-    delay(1000);
-    moveSlowlyServo2(0, 30, 25); // Déplace de 0° à 180° avec un délai de 50ms entre chaque degré
-    delay(1000);
-    moveSlowlyServo3(0, 10, 25); // Déplace de 0° à 180° avec un délai de 50ms entre chaque degré
-    delay(1000);
-
-
-    moveSlowlyServo1(-30, 0, 25); // Déplace de 0° à 180° avec un délai de 50ms entre chaque degré
-    delay(1000);
-    moveSlowlyServo2(30, 0, 25); // Déplace de 0° à 180° avec un délai de 50ms entre chaque degré
-    delay(1000);
-    moveSlowlyServo3(10, 0, 25); // Déplace de 0° à 180° avec un délai de 50ms entre chaque degré
-    delay(1000);*/
   }
 }
