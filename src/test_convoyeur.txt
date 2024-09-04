@@ -1,0 +1,67 @@
+#include <Arduino.h>
+#include <AccelStepper.h>
+
+// Définition des broches pour le pilote du moteur pas à pas
+#define DIR_PIN 12
+#define STEP_PIN 14
+
+// Création d'une instance de AccelStepper pour contrôler le moteur pas à pas
+AccelStepper stepper(AccelStepper::DRIVER, STEP_PIN, DIR_PIN);
+
+int state = 0;              // Variable pour l'état du système
+const char *message_action; // Pointeur vers le message à afficher
+bool motorRunning = false;  // Drapeau d'indication d'état du moteur
+
+void setup()
+{
+  Serial.begin(115200);
+  pinMode(DIR_PIN, OUTPUT);
+  pinMode(STEP_PIN, OUTPUT);
+
+  stepper.setMaxSpeed(1000); // Définition de la vitesse maxi du moteur
+  stepper.setSpeed(0);       // Initialisation vitesse moteur = 0 (arrêt)
+
+  while (!Serial)
+  {
+    ; // Attente de connexion série
+  }
+}
+
+void loop()
+{
+  // Vérification de la dispo des données sur le port série
+  if (Serial.available() > 0)
+  {
+    char cmd_test = Serial.read();
+    if (cmd_test == 't')
+    {
+      switch (state)
+      {
+      case 0:
+        message_action = "Le robot1 a apporte la piece 1 sur le convoyeur, activation du convoyeur.";
+        Serial.println(message_action);
+        stepper.setSpeed(-200); // Démarrer le moteur (sens trigo)
+        motorRunning = true;
+        state = 1;
+        break;
+      case 1:
+        message_action = "Le capteur IR a detecte la piece 1, arret du convoyeur.";
+        Serial.println(message_action);
+        stepper.setSpeed(0); // Arrêter le moteur
+        motorRunning = false;
+        state = 2;
+        break;
+      case 2:
+        message_action = "Le robot2 a fini d'assembler le 2 pieces, attente de la confirmation du robot1.";
+        Serial.println(message_action);
+        state = 0;
+        break;
+      }
+    }
+  }
+
+  if (motorRunning)
+  {
+    stepper.runSpeed(); // Faire tourner le moteur d'un pas s'il est en marche
+  }
+}
