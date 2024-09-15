@@ -1,11 +1,12 @@
 #include <Arduino.h>
 
 // Définition des broches
-const int pinPHASE = 4;
-const int pinENABLE = 0;
+const int pinPHASE = 14;
+const int pinENABLE = 12;
 const int pinTransistor = 25;
 
-void setup() {
+void setup()
+{
   pinMode(pinPHASE, OUTPUT);
   pinMode(pinENABLE, OUTPUT);
   pinMode(pinTransistor, OUTPUT);
@@ -16,7 +17,8 @@ void setup() {
   delay(1000);
 }
 
-void loop() {
+void loop()
+{
   // Activer la pompe
   digitalWrite(pinTransistor, LOW);
   digitalWrite(pinENABLE, HIGH);
@@ -28,7 +30,7 @@ void loop() {
   // Désactiver la pompe
   digitalWrite(pinPHASE, LOW);
   digitalWrite(pinENABLE, LOW);
-  
+
   // Activer le transistor
   digitalWrite(pinTransistor, HIGH);
   delay(1000);
