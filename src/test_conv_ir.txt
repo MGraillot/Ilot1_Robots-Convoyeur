@@ -2,11 +2,11 @@
 #include <AccelStepper.h>
 
 // Définition des broches pour le pilote du moteur pas à pas
-#define DIR_PIN 12
-#define STEP_PIN 14
+#define DIR_PIN 2   // 12
+#define STEP_PIN 15 // 14
 
 // Définition des broches pour le capteur infrarouge
-#define IR_SENSOR_PIN 35
+#define IR_SENSOR_PIN 13 // 35
 
 // Création d'une instance de AccelStepper pour contrôler le moteur pas à pas
 AccelStepper stepper(AccelStepper::DRIVER, STEP_PIN, DIR_PIN);

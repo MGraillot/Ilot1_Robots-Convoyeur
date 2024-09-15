@@ -133,6 +133,9 @@ int servo1Pin = 22; // Servo 1 (22)
 int servo2Pin = 21; // Servo 2 (21)
 int servo3Pin = 19; // Servo 3 (bout de bras) (23)
 
+// Tolérance d'angle (marge d'erreur acceptable en degrés)
+const int angleTolerance = 2;
+
 void setup()
 {
   Serial.begin(115200);
@@ -144,7 +147,7 @@ void setup()
 
   DM996Servo2.write(40);
   FT6335Servo.write(0);
-  DM996Servo1.write(0);
+  DM996Servo1.write(50);
   DM996Servo3.write(140);
 
   while (!Serial)
@@ -187,8 +190,16 @@ void setup()
 }*/
 
 // Fonction générique pour déplacer lentement n'importe quel servo
-void moveSlowly(Servo &servo, int startAngle, int endAngle, int delay_ms)
+/*void moveSlowly(Servo &servo, int startAngle, int endAngle, int delay_ms)
 {
+  // Ajoute une vérification de tolérance
+  if (abs(startAngle - endAngle) <= angleTolerance)
+  {
+    // Si la différence est dans la marge de tolérance, ne pas ajuster
+    Serial.println("Mouvement annulé : angle dans la marge de tolérance.");
+    return;
+  }
+
   int step = (startAngle < endAngle) ? 1 : -1;
 
   for (int angle = startAngle; angle != endAngle; angle += step)
@@ -197,6 +208,20 @@ void moveSlowly(Servo &servo, int startAngle, int endAngle, int delay_ms)
     delay(delay_ms);
   }
   servo.write(endAngle); // Assurez-vous d'atteindre l'angle final
+}*/
+
+// TEST AVC TOLERANCE ANGLE ROBOT
+void moveSlowly(Servo &servo, int startAngle, int endAngle, int delayTime, int tolerance = 1)
+{
+  int currentAngle = servo.read();
+  int step = (endAngle > startAngle) ? 1 : -1;
+
+  while (abs(currentAngle - endAngle) > tolerance)
+  {
+    currentAngle += step;
+    servo.write(currentAngle);
+    delay(delayTime);
+  }
 }
 
 /*
@@ -258,31 +283,31 @@ void loop()
     if (cmd_test == 'b')
     // MBASE
     {
-      moveSlowly(FT6335Servo, 0, 1, 50); // Déplace de 0° à 90° avec un délai de 50ms entre chaque degré
+      moveSlowly(FT6335Servo, 0, 1, 50, 3); // Déplace de 0° à 90° avec un délai de 50ms entre chaque degré
       Serial.println("MBASE a 90 deg");
     }
     if (cmd_test == '1')
     // M1
     {
-      moveSlowly(DM996Servo1, 0, 50, 50); // Déplace de 0° à 30° avec un délai de 50ms entre chaque degré
+      moveSlowly(DM996Servo1, 50, 105, 50, 3); // Déplace de 0° à 30° avec un délai de 50ms entre chaque degré
       Serial.println("M1 a 50 deg");
     }
     if (cmd_test == '2')
     // M2
     {
-      moveSlowly(DM996Servo2, 40, 50, 50); // Déplace de 40° à 20° avec un délai de 50ms entre chaque degré
+      moveSlowly(DM996Servo2, 40, 60, 25, 3); // Déplace de 40° à 20° avec un délai de 50ms entre chaque degré
       Serial.println("M2 a 50 deg");
     }
     if (cmd_test == '3')
     // M3
     {
-      moveSlowly(DM996Servo3, 140, 87, 50); // Déplace de 140° à 70° avec un délai de 50ms entre chaque degré
+      moveSlowly(DM996Servo3, 140, 120, 50, 3); // Déplace de 140° à 70° avec un délai de 50ms entre chaque degré
       Serial.println("M3 a 100 deg");
     }
 
     if (cmd_test == 'c')
     {
-      moveSlowly(FT6335Servo, 0, 49, 50); // Déplace de 0° à 90° avec un délai de 50ms entre chaque degré
+      moveSlowly(FT6335Servo, 0, 49, 50, 3); // Déplace de 0° à 90° avec un délai de 50ms entre chaque degré
       Serial.println("je suis a la pose 97");
     }
   }

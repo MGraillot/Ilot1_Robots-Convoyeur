@@ -34,22 +34,22 @@ void setup()
   DM996Servo1.attach(servo2Pin);
   DM996Servo2.attach(servo3Pin);
   DM996Servo3.attach(servo4Pin);
-  // Pose init robot 1
-  DM996Servo2.write(40);
-  FT6335Servo1.write(0);
-  DM996Servo1.write(50);
-  DM996Servo3.write(140);
-
   // ROBOT 2
   FT6335Servo2.attach(servo5Pin);
   DM996Servo4.attach(servo6Pin);
   DM996Servo5.attach(servo7Pin);
   DM996Servo6.attach(servo8Pin);
+
+  // Pose init robot 1
+  /*DM996Servo2.write(40);
+  FT6335Servo1.write(0);
+  DM996Servo1.write(50);
+  DM996Servo3.write(140);*/
   // Pose init robot 2
-  /*DM996Servo5.write(40);
+  DM996Servo5.write(50);
   FT6335Servo2.write(0);
   DM996Servo4.write(50);
-  DM996Servo6.write(140);*/
+  DM996Servo6.write(140);
 
   while (!Serial)
   {
@@ -84,60 +84,78 @@ void loop()
       moveSlowly(FT6335Servo1, 0, 1, 50); // Déplace de 0° à 90° avec un délai de 50ms entre chaque degré
       Serial.println("MBASE a 1 deg");
       // M3
-      moveSlowly(DM996Servo3, 140, 87, 50); // Déplace de 140° à 70° avec un délai de 50ms entre chaque degré
+      moveSlowly(DM996Servo3, 140, 115, 50); // Déplace de 140° à 70° avec un délai de 50ms entre chaque degré
       Serial.println("M3 a 87 deg");
       // M2
-      moveSlowly(DM996Servo2, 40, 50, 50); // Déplace de 40° à 20° avec un délai de 50ms entre chaque degré
+      moveSlowly(DM996Servo2, 40, 70, 50); // Déplace de 40° à 20° avec un délai de 50ms entre chaque degré
       Serial.println("M2 a 50 deg");
       // M1
-      moveSlowly(DM996Servo1, 50, 110, 50); // Déplace de 0° à 30° avec un délai de 50ms entre chaque degré
+      moveSlowly(DM996Servo1, 50, 105, 50); // Déplace de 0° à 30° avec un délai de 50ms entre chaque degré
       Serial.println("M1 a 100 deg");
     }
     if (cmd_test == '1')
     {
       // M1
-      moveSlowly(DM996Servo1, 110, 20, 50); // Déplace de 0° à 30° avec un délai de 50ms entre chaque degré
+      moveSlowly(DM996Servo1, 105, 50, 50); // Déplace de 0° à 30° avec un délai de 50ms entre chaque degré
       Serial.println("M1 a 20 deg");
       // MBASE
       moveSlowly(FT6335Servo1, 1, 49, 50); // Déplace de 0° à 90° avec un délai de 50ms entre chaque degré
       Serial.println("MBASE a 90 deg");
       // M3
-      moveSlowly(DM996Servo3, 87, 120, 50); // Déplace de 140° à 70° avec un délai de 50ms entre chaque degré
+      moveSlowly(DM996Servo3, 115, 140, 50); // Déplace de 140° à 70° avec un délai de 50ms entre chaque degré
       Serial.println("M3 a 120 deg");
       // M1
-      moveSlowly(DM996Servo1, 20, 57, 50); // Déplace de 0° à 30° avec un délai de 50ms entre chaque degré
+      moveSlowly(DM996Servo1, 50, 80, 50); // Déplace de 0° à 30° avec un délai de 50ms entre chaque degré
+      Serial.println("M1 a 55 deg");
+    }
+    if (cmd_test == '2')
+    {
+      // M1
+      moveSlowly(DM996Servo1, 80, 50, 50); // Déplace de 0° à 30° avec un délai de 50ms entre chaque degré
+      Serial.println("M1 a 20 deg");
+      // MBASE
+      moveSlowly(FT6335Servo1, 49, 1, 50); // Déplace de 0° à 90° avec un délai de 50ms entre chaque degré
+      Serial.println("MBASE a 90 deg");
+      // M3
+      moveSlowly(DM996Servo3, 140, 115, 50); // Déplace de 140° à 70° avec un délai de 50ms entre chaque degré
+      Serial.println("M3 a 120 deg");
+      // M1
+      moveSlowly(DM996Servo1, 50, 105, 50); // Déplace de 0° à 30° avec un délai de 50ms entre chaque degré
       Serial.println("M1 a 55 deg");
     }
     // ROBOT 2
-    if (cmd_test == '2')
-    {
-      // MBASE
-      moveSlowly(FT6335Servo2, 0, 1, 50); // Déplace de 0° à 90° avec un délai de 50ms entre chaque degré
-      Serial.println("MBASE a 1 deg");
-      // M3
-      moveSlowly(DM996Servo6, 140, 87, 50); // Déplace de 140° à 70° avec un délai de 50ms entre chaque degré
-      Serial.println("M3 a 87 deg");
-      // M2
-      moveSlowly(DM996Servo5, 40, 50, 50); // Déplace de 40° à 20° avec un délai de 50ms entre chaque degré
-      Serial.println("M2 a 50 deg");
-      // M1
-      moveSlowly(DM996Servo4, 50, 110, 50); // Déplace de 0° à 30° avec un délai de 50ms entre chaque degré
-      Serial.println("M1 a 100 deg");
-    }
     if (cmd_test == '3')
     {
+      // MBASE
+      moveSlowly(FT6335Servo2, 0, -1, 50); // Déplace de 0° à 90° avec un délai de 50ms entre chaque degré
+      Serial.println("MBASE a 1 deg");
+      // M3
+      moveSlowly(DM996Servo6, 140, 120, 50); // Déplace de 140° à 70° avec un délai de 50ms entre chaque degré
+      Serial.println("M3 a 87 deg");
+      // M2
+      moveSlowly(DM996Servo5, 50, 60, 50); // Déplace de 40° à 20° avec un délai de 50ms entre chaque degré
+      Serial.println("M2 a 50 deg");
       // M1
-      moveSlowly(DM996Servo4, 110, 20, 50); // Déplace de 0° à 30° avec un délai de 50ms entre chaque degré
+      moveSlowly(DM996Servo4, 50, 90, 50); // Déplace de 0° à 30° avec un délai de 50ms entre chaque degré
+      Serial.println("M1 a 100 deg");
+    }
+    if (cmd_test == '4')
+    {
+      // M1
+      moveSlowly(DM996Servo4, 90, 50, 50); // Déplace de 0° à 30° avec un délai de 50ms entre chaque degré
       Serial.println("M1 a 20 deg");
       // MBASE
-      moveSlowly(FT6335Servo2, 1, 49, 50); // Déplace de 0° à 90° avec un délai de 50ms entre chaque degré
+      moveSlowly(FT6335Servo2, -1, 41, 50); // Déplace de 0° à 90° avec un délai de 50ms entre chaque degré
       Serial.println("MBASE a 90 deg");
       // M3
-      moveSlowly(DM996Servo6, 87, 120, 50); // Déplace de 140° à 70° avec un délai de 50ms entre chaque degré
+      moveSlowly(DM996Servo6, 120, 130, 50); // Déplace de 140° à 70° avec un délai de 50ms entre chaque degré
       Serial.println("M3 a 120 deg");
       // M1
-      moveSlowly(DM996Servo4, 20, 57, 50); // Déplace de 0° à 30° avec un délai de 50ms entre chaque degré
+      moveSlowly(DM996Servo4, 50, 75, 50); // Déplace de 0° à 30° avec un délai de 50ms entre chaque degré
       Serial.println("M1 a 55 deg");
+      // M2
+      moveSlowly(DM996Servo5, 60, 55, 50); // Déplace de 40° à 20° avec un délai de 50ms entre chaque degré
+      Serial.println("M2 a 50 deg");
     }
   }
 }
