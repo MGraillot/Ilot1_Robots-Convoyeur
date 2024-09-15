@@ -210,7 +210,7 @@ void setup()
   servo.write(endAngle); // Assurez-vous d'atteindre l'angle final
 }*/
 
-// TEST AVC TOLERANCE ANGLE ROBOT
+// TEST AVC TOLERANCE ANGLE ROBOT 1 (MOTEUR 2)
 void moveSlowly(Servo &servo, int startAngle, int endAngle, int delayTime, int tolerance = 1)
 {
   int currentAngle = servo.read();
