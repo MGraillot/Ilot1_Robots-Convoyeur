@@ -1,9 +1,9 @@
 #include <Arduino.h>
 
 // Définition des broches
-const int pinPHASE = 14;
-const int pinENABLE = 12;
-const int pinTransistor = 25;
+const int pinPHASE = 4;       // robot 1 = 14
+const int pinENABLE = 0;      // robot 1 = 12
+const int pinTransistor = 33; // robto 1 = 25
 
 void setup()
 {

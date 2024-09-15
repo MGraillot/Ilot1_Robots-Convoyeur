@@ -27,9 +27,14 @@ int servo7Pin = 17; // Servo 2
 int servo8Pin = 16; // Servo 3 (bout de bras)
 
 // Prehenseur ROBOT 1
-const int pinPHASE = 14;
-const int pinENABLE = 12;
-const int pinTransistor = 25;
+const int pinPHASE1 = 14;
+const int pinENABLE1 = 12;
+const int pinTransistor1 = 25;
+
+// Prehenseur ROBOT
+const int pinPHASE2 = 4;
+const int pinENABLE2 = 0;
+const int pinTransistor2 = 33;
 
 // Définition des broches pour le pilote du moteur pas à pas
 #define DIR_PIN 2   // 12
@@ -71,7 +76,7 @@ void setup()
 
     FT6335Servo2.write(0);
     DM996Servo4.write(50);
-    DM996Servo5.write(50);
+    DM996Servo5.write(40);
     DM996Servo6.write(140);
 
     // Configuration du capteur infrarouge et du moteur pas à pas
@@ -80,11 +85,19 @@ void setup()
     pinMode(STEP_PIN, OUTPUT);
 
     // Prehenseur robot 1
-    pinMode(pinPHASE, OUTPUT);
-    pinMode(pinENABLE, OUTPUT);
-    pinMode(pinTransistor, OUTPUT);
-    digitalWrite(pinPHASE, LOW); // Assurer que la pompe est désactivée au début
-    digitalWrite(pinENABLE, LOW);
+    pinMode(pinPHASE1, OUTPUT);
+    pinMode(pinENABLE1, OUTPUT);
+    pinMode(pinTransistor1, OUTPUT);
+    digitalWrite(pinPHASE1, LOW); // Assurer que la pompe est désactivée au début
+    digitalWrite(pinENABLE1, LOW);
+    // delay(1000);
+
+    // Prehenseur robot 2
+    pinMode(pinPHASE2, OUTPUT);
+    pinMode(pinENABLE2, OUTPUT);
+    pinMode(pinTransistor2, OUTPUT);
+    digitalWrite(pinPHASE2, LOW); // Assurer que la pompe est désactivée au début
+    digitalWrite(pinENABLE2, LOW);
     // delay(1000);
 
     stepper.setMaxSpeed(1000);
@@ -112,12 +125,12 @@ void moveSlowly(Servo &servo, int startAngle, int endAngle, int delay_ms)
 }
 
 // Fonction pour le mouvement du Robot 1
-void moveRobotConv()
+void moveRobot1Conv()
 {
     // Activer la pompe
-    digitalWrite(pinTransistor, LOW);
-    digitalWrite(pinENABLE, HIGH);
-    digitalWrite(pinPHASE, HIGH);
+    digitalWrite(pinTransistor1, LOW);
+    digitalWrite(pinENABLE1, HIGH);
+    digitalWrite(pinPHASE1, HIGH);
 
     Serial.println("Démarrage de la séquence du Robot 1");
     // MBASE
@@ -125,16 +138,16 @@ void moveRobotConv()
     Serial.println("MBASE a 1 deg");
     // M3
     moveSlowly(DM996Servo3, 140, 115, 50);
-    Serial.println("M3 a 87 deg");
+    Serial.println("M3 a 115 deg");
     // M2
     moveSlowly(DM996Servo2, 40, 70, 50);
-    Serial.println("M2 a 50 deg");
+    Serial.println("M2 a 70 deg");
     // M1
-    moveSlowly(DM996Servo1, 50, 105, 50);
-    Serial.println("M1 a 100 deg");
+    moveSlowly(DM996Servo1, 50, 110, 50);
+    Serial.println("M1 a 110 deg");
 
     // Aller vers le convoyeur
-    moveSlowly(DM996Servo1, 105, 50, 50);
+    moveSlowly(DM996Servo1, 110, 50, 50);
     moveSlowly(FT6335Servo1, 1, 49, 50);
     moveSlowly(DM996Servo3, 115, 140, 50);
     moveSlowly(DM996Servo1, 50, 80, 50);
@@ -146,16 +159,16 @@ void moveRobotConv()
     Serial.println("En attente de détection de pièce pour Robot 2");
 
     // Désactiver la pompe
-    digitalWrite(pinPHASE, LOW);
-    digitalWrite(pinENABLE, LOW);
+    digitalWrite(pinPHASE1, LOW);
+    digitalWrite(pinENABLE1, LOW);
 
     // Activer le transistor
-    digitalWrite(pinTransistor, HIGH);
+    digitalWrite(pinTransistor1, HIGH);
     // delay(1000);
     conveyorRunning = true;
 }
 
-void moveRobotInit()
+void moveRobot1Init()
 {
     // Aller vers nouvelle pièce
     moveSlowly(DM996Servo1, 80, 50, 50);
@@ -164,34 +177,55 @@ void moveRobotInit()
 }
 
 // Fonction pour le mouvement du Robot 2
-void moveRobot2()
+void moveRobot2Conv()
 {
+    // Activer la pompe robot 2
+    digitalWrite(pinTransistor2, LOW);
+    digitalWrite(pinENABLE2, HIGH);
+    digitalWrite(pinPHASE2, HIGH);
+
     Serial.println("Démarrage de la séquence du Robot 2");
     // MBASE
-    moveSlowly(FT6335Servo2, 0, -1, 50);
-    Serial.println("MBASE a 1 deg");
+    // moveSlowly(FT6335Servo2, 0, -1, 50);
+    // Serial.println("MBASE a 1 deg");
     // M3
-    moveSlowly(DM996Servo6, 140, 120, 50);
+    moveSlowly(DM996Servo6, 140, 125, 50);
     Serial.println("M3 a 87 deg");
     // M2
     moveSlowly(DM996Servo5, 50, 60, 50);
     Serial.println("M2 a 50 deg");
     // M1
-    moveSlowly(DM996Servo4, 50, 90, 50);
+    moveSlowly(DM996Servo4, 50, 100, 50);
     Serial.println("M1 a 100 deg");
 
+    // Aller vers le convoyeur
+    moveSlowly(DM996Servo4, 100, 50, 50);
+    moveSlowly(FT6335Servo2, 0, 41, 50);
+    // moveSlowly(DM996Servo6, 120, 125, 50);
+    moveSlowly(DM996Servo5, 50, 85, 50);
+    delay(500);
+
+    // Désactiver la pompe
+    digitalWrite(pinPHASE2, LOW);
+    digitalWrite(pinENABLE2, LOW);
+
+    // Activer le transistor
+    digitalWrite(pinTransistor2, HIGH);
+    // delay(1000);
+
     // Retour à la position initiale
-    moveSlowly(DM996Servo4, 90, 50, 50);
-    moveSlowly(FT6335Servo2, -1, 0, 50);
-    moveSlowly(DM996Servo6, 120, 140, 50);
-    moveSlowly(DM996Servo5, 60, 50, 50);
+    moveSlowly(FT6335Servo2, 41, 0, 50);
+    moveSlowly(DM996Servo6, 125, 140, 50);
+    moveSlowly(DM996Servo5, 85, 50, 50);
 
     Serial.println("Fin de la séquence du Robot 2");
     robot2Sequence = false;
     conveyorRunning = true; // Redémarrer le convoyeur après la séquence du Robot 2
+    /*
     stepper.setSpeed(-200); // Remettre la vitesse du convoyeur
     Serial.println("Convoyeur redémarré");
     Serial.println("Entrez une lettre ou un chiffre pour lancer la séquence du Robot 1.");
+    */
 }
 
 void loop()
@@ -209,8 +243,8 @@ void loop()
         if (isAlphaNumeric(input))
         {
             robot1Sequence = true;
-            moveRobotConv();
-            moveRobotInit();
+            moveRobot1Conv();
+            moveRobot1Init();
         }
     }
 
@@ -224,7 +258,7 @@ void loop()
         stepper.setSpeed(0); // Arrêter le convoyeur
         robot2Sequence = true;
         waitingForRobot2 = false;
-        moveRobot2();
+        moveRobot2Conv();
         objectDetected = false; // Réinitialiser le flag pour le prochain objet
     }
 }
